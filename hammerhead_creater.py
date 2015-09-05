@@ -7,18 +7,13 @@ with open("merged_backsplice_sequences15bp.json") as handle:
 
 #finds the position of AG or GT and writes to a dictionary with the corresponding cid
 def locus_find():
-    locusat = {}
-    locusgt = {}
+    locusag = {}
     for cid in data:
         for x in range(10,20):
             if data[cid][x] == "A":
-                if data[cid][x+1] == "T":
-                    locusat[cid] = x
-        for y in range(10,20):
-            if data[cid][y] == "G":
-                if data[cid][y+1] == "T":
-                    locusgt[cid] = y
-    return locusat, locusgt
+                if data[cid][x+1] == "G":
+                    locusag[cid] = x
+    return locusag
 
 
 #method to obtain the complement of the target sequence for performing a pairwise alignment to check the dnazyme
@@ -43,7 +38,7 @@ def dnazyme_creater(locus):
     dnazyme = {}
     for cid in locus:
         n = locus[cid]
-        catcore = "GGCTAGCTACAACGA"
+        catcore = ""
         left = str(data[cid][n-8:n])
         right = str(data[cid][n+1:n+9])
         dzyme = Seq(left).complement() + catcore + Seq(right).complement()
@@ -58,14 +53,11 @@ if __name__ == '__main__':
 # calls the dnazyme_creater method and saves the resulting dictionary to a variable
 
     dzyme_at = dnazyme_creater(lociat)
-    dzyme_gt = dnazyme_creater(locigt)
-    print len(dzyme_gt), len(dzyme_at)
+    print len(dzyme_gt)
 
 # saves the dictionary of dnazymes into a json file
 
     with open ('dnazyme_sequences_GU.json','w') as handle:
         json.dump(dzyme_gt, handle, indent=2)
-    with open ('dnazyme_sequences_AT.json','w') as ha:
-        json.dump(dzyme_at, ha, indent=2)
 
 
